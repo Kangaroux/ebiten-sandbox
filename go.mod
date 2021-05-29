@@ -1,4 +1,4 @@
-module github.com/Kangaroux/ebiten
+module github.com/Kangaroux/game
 
 go 1.16
 

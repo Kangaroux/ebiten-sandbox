@@ -1,4 +1,4 @@
-package main
+package game
 
 import (
 	"fmt"
@@ -12,10 +12,18 @@ type SceneChanger interface {
 	ChangeScene(s Scene)
 }
 
-type Scene interface {
+type Drawer interface {
 	Draw(canvas *ebiten.Image)
-	Init(game *Game)
+}
+
+type Updater interface {
 	Update(deltaTime float64)
+}
+
+type Scene interface {
+	Drawer
+	Updater
+	Init(game *Game)
 }
 
 type TestScene struct {
