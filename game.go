@@ -6,6 +6,13 @@ type Game struct {
 	Scene Scene
 }
 
+var _ ebiten.Game = (*Game)(nil)
+var _ SceneChanger = (*Game)(nil)
+
+func (g *Game) ChangeScene(s Scene) {
+	g.Scene = s
+}
+
 func (g *Game) Update() error {
 	return nil
 }

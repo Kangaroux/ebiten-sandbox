@@ -6,6 +6,10 @@ import (
 	"github.com/hajimehoshi/ebiten/v2"
 )
 
+type SceneChanger interface {
+	ChangeScene(s Scene)
+}
+
 type Scene interface {
 	Draw(canvas *ebiten.Image)
 }
