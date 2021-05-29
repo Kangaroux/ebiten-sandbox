@@ -41,7 +41,7 @@ type TestScene struct {
 var _ Scene = (*TestScene)(nil)
 
 func (s *TestScene) Draw(canvas *ebiten.Image) {
-	now := s.game.Elapsed()
+	now := s.game.ElapsedReal()
 
 	s.fpsSamples.Add(1 / (now - s.lastDraw))
 	canvas.Fill(color.RGBA{50, 50, 50, 255})
@@ -49,7 +49,7 @@ func (s *TestScene) Draw(canvas *ebiten.Image) {
 	if now >= s.nextRefresh {
 		s.nextRefresh = now + (1 / float64(s.refreshRate))
 		s.text = fmt.Sprintf("elapsed: %.3f\ntps: %.2f\nfps: %.2f",
-			s.lastUpdate,
+			s.game.ElapsedGame(),
 			s.updateSamples.Average(),
 			s.fpsSamples.Average(),
 		)
@@ -68,7 +68,7 @@ func (s *TestScene) Init(game *Game) {
 }
 
 func (s *TestScene) Update(deltaTime float64) {
-	now := s.game.Elapsed()
+	now := s.game.ElapsedReal()
 	s.updateSamples.Add(1 / (now - s.lastUpdate))
 	s.lastUpdate = now
 }

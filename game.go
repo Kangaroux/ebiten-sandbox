@@ -29,7 +29,11 @@ func (g *Game) Init(s Scene) {
 	g.startTime = timeNow()
 }
 
-func (g *Game) Elapsed() float64 {
+func (g *Game) ElapsedGame() float64 {
+	return g.lastUpdateTime - g.startTime
+}
+
+func (g *Game) ElapsedReal() float64 {
 	return timeNow() - g.startTime
 }
 
