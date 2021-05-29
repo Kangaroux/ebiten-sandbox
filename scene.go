@@ -27,26 +27,45 @@ type Scene interface {
 }
 
 type TestScene struct {
-	game       *Game
-	lastUpdate float64
-	updateFreq float64
+	game *Game
+
+	fpsSamples    *Sampler
+	updateSamples *Sampler
+	lastDraw      float64
+	lastUpdate    float64
+	nextRefresh   float64
+	refreshRate   int
+	text          string
 }
 
 var _ Scene = (*TestScene)(nil)
 
 func (s *TestScene) Draw(canvas *ebiten.Image) {
+	s.fpsSamples.Add(1 / (s.game.Elapsed() - s.lastDraw))
 	canvas.Fill(color.RGBA{50, 50, 50, 255})
-	ebitenutil.DebugPrint(canvas, fmt.Sprintf("elapsed: %.3f\ntps: %.2f", s.lastUpdate, ebiten.CurrentTPS()))
+
+	if s.game.Elapsed() >= s.nextRefresh {
+		s.nextRefresh = s.game.Elapsed() + (1 / float64(s.refreshRate))
+		s.text = fmt.Sprintf("elapsed: %.3f\ntps: %.2f\nfps: %.2f",
+			s.lastUpdate,
+			s.updateSamples.Average(),
+			s.fpsSamples.Average(),
+		)
+	}
+
+	ebitenutil.DebugPrint(canvas, s.text)
+
+	s.lastDraw = s.game.Elapsed()
 }
 
 func (s *TestScene) Init(game *Game) {
 	s.game = game
-	s.lastUpdate = -1
-	s.updateFreq = 10
+	s.fpsSamples = NewSampler(10)
+	s.updateSamples = NewSampler(10)
+	s.refreshRate = 10
 }
 
 func (s *TestScene) Update(deltaTime float64) {
-	if s.game.Elapsed()-s.lastUpdate >= (1 / s.updateFreq) {
-		s.lastUpdate = s.game.Elapsed()
-	}
+	s.updateSamples.Add(1 / (s.game.Elapsed() - s.lastUpdate))
+	s.lastUpdate = s.game.Elapsed()
 }
