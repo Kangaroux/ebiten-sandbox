@@ -41,11 +41,13 @@ type TestScene struct {
 var _ Scene = (*TestScene)(nil)
 
 func (s *TestScene) Draw(canvas *ebiten.Image) {
-	s.fpsSamples.Add(1 / (s.game.Elapsed() - s.lastDraw))
+	now := s.game.Elapsed()
+
+	s.fpsSamples.Add(1 / (now - s.lastDraw))
 	canvas.Fill(color.RGBA{50, 50, 50, 255})
 
-	if s.game.Elapsed() >= s.nextRefresh {
-		s.nextRefresh = s.game.Elapsed() + (1 / float64(s.refreshRate))
+	if now >= s.nextRefresh {
+		s.nextRefresh = now + (1 / float64(s.refreshRate))
 		s.text = fmt.Sprintf("elapsed: %.3f\ntps: %.2f\nfps: %.2f",
 			s.lastUpdate,
 			s.updateSamples.Average(),
@@ -55,7 +57,7 @@ func (s *TestScene) Draw(canvas *ebiten.Image) {
 
 	ebitenutil.DebugPrint(canvas, s.text)
 
-	s.lastDraw = s.game.Elapsed()
+	s.lastDraw = now
 }
 
 func (s *TestScene) Init(game *Game) {
@@ -66,6 +68,7 @@ func (s *TestScene) Init(game *Game) {
 }
 
 func (s *TestScene) Update(deltaTime float64) {
-	s.updateSamples.Add(1 / (s.game.Elapsed() - s.lastUpdate))
-	s.lastUpdate = s.game.Elapsed()
+	now := s.game.Elapsed()
+	s.updateSamples.Add(1 / (now - s.lastUpdate))
+	s.lastUpdate = now
 }

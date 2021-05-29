@@ -30,7 +30,7 @@ func (g *Game) Init(s Scene) {
 }
 
 func (g *Game) Elapsed() float64 {
-	return g.lastUpdateTime - g.startTime
+	return timeNow() - g.startTime
 }
 
 func (g *Game) Update() error {
