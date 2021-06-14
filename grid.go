@@ -1,10 +1,6 @@
 package game
 
 import (
-	"fmt"
-	"image"
-	"math"
-
 	"github.com/hajimehoshi/ebiten/v2"
 	"github.com/hajimehoshi/ebiten/v2/ebitenutil"
 
@@ -41,31 +37,6 @@ func (g *Grid) Draw(canvas *ebiten.Image) {
 	canvas.DrawImage(g.isometric, nil)
 }
 
-func toIsometric(img *ebiten.Image) *ebiten.Image {
-	yScale := 1 / math.Sqrt2
-	srcDim := image.Pt(img.Bounds().Dx(), img.Bounds().Dy())
-	isoDim := image.Pt(
-		int(math.Ceil(math.Sqrt(float64(srcDim.X*srcDim.X+srcDim.Y*srcDim.Y)))),
-		srcDim.Y,
-	)
-
-	fmt.Println("src:", srcDim)
-	fmt.Println("iso:", isoDim)
-
-	out := ebiten.NewImage(isoDim.X, isoDim.Y)
-	geo := ebiten.GeoM{}
-
-	geo.Rotate(45 * math.Pi / 180)
-	geo.Scale(1, yScale)
-	geo.Translate(float64(isoDim.X)/2, 0)
-	out.DrawImage(img, &ebiten.DrawImageOptions{
-		GeoM:   geo,
-		Filter: ebiten.FilterLinear,
-	})
-
-	return out
-}
-
 func NewGrid(w, h int) *Grid {
 	g := &Grid{W: w, H: h}
 	tileSize := sq.Bounds().Dx()
@@ -81,7 +52,7 @@ func NewGrid(w, h int) *Grid {
 		}
 	}
 
-	g.isometric = toIsometric(g.img)
+	g.isometric = ImageToIsometric(g.img)
 
 	return g
 }
