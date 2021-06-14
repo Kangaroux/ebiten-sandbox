@@ -52,5 +52,5 @@ func (g *Game) Draw(canvas *ebiten.Image) {
 }
 
 func (g *Game) Layout(w, h int) (int, int) {
-	return 320, 240
+	return 200, 200
 }
