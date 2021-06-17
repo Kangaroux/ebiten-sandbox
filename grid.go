@@ -1,11 +1,25 @@
 package game
 
 import (
+	"fmt"
+
 	"github.com/hajimehoshi/ebiten/v2"
 	"github.com/hajimehoshi/ebiten/v2/ebitenutil"
 
 	_ "image/png"
 )
+
+var sq *ebiten.Image
+
+func init() {
+	var err error
+
+	sq, _, err = ebitenutil.NewImageFromFile("./img/sq3.png")
+
+	if err != nil {
+		panic(err)
+	}
+}
 
 type Grid struct {
 	W, H      int
@@ -19,18 +33,6 @@ func (g *Grid) DisplayWidth() int {
 
 func (g *Grid) DisplayHeight() int {
 	return g.img.Bounds().Dy()
-}
-
-var sq *ebiten.Image
-
-func init() {
-	var err error
-
-	sq, _, err = ebitenutil.NewImageFromFile("./img/sq3.png")
-
-	if err != nil {
-		panic(err)
-	}
 }
 
 func (g *Grid) Draw(canvas *ebiten.Image) {
@@ -65,6 +67,18 @@ var _ Scene = (*GridScene)(nil)
 
 func (s *GridScene) Draw(canvas *ebiten.Image) {
 	s.Grid.Draw(canvas)
+
+	curX, curY := ebiten.CursorPosition()
+	fCur := FPoint{float64(curX), float64(curY)}
+	fCur.X -= 91
+	iso := OrthoToIso(fCur)
+	isoPt := iso.ImagePoint()
+
+	// canvas.Set(isoPt.X, isoPt.Y, color.RGBA{255, 0, 0, 255})
+
+	ebitenutil.DebugPrint(canvas,
+		fmt.Sprintf("screen: %d, %d\nworld: %d, %d", curX, curY, isoPt.X, isoPt.Y),
+	)
 }
 
 func (s *GridScene) Update(deltaTime float64) {
