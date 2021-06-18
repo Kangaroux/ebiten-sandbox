@@ -1,8 +1,6 @@
 package game
 
 import (
-	"fmt"
-
 	"github.com/hajimehoshi/ebiten/v2"
 	"github.com/hajimehoshi/ebiten/v2/ebitenutil"
 
@@ -22,9 +20,10 @@ func init() {
 }
 
 type Grid struct {
-	W, H      int
-	img       *ebiten.Image
-	isometric *ebiten.Image
+	size      int           // The size of the grid, in tiles
+	tileSize  int           // The size of each square tile, in pixels
+	img       *ebiten.Image // An image of the grid
+	isometric *ebiten.Image // An image of the grid using isometric projection
 }
 
 func (g *Grid) DisplayWidth() int {
@@ -39,15 +38,14 @@ func (g *Grid) Draw(canvas *ebiten.Image) {
 	canvas.DrawImage(g.isometric, nil)
 }
 
-func NewGrid(w, h int) *Grid {
-	g := &Grid{W: w, H: h}
-	tileSize := sq.Bounds().Dx()
-	g.img = ebiten.NewImage(g.W*tileSize, g.H*tileSize)
+func NewGrid(size int) *Grid {
+	g := &Grid{size: size, tileSize: sq.Bounds().Dx()}
+	g.img = ebiten.NewImage(g.size*g.tileSize, g.size*g.tileSize)
 
-	for i := 0; i < w; i++ {
-		for j := 0; j < h; j++ {
+	for i := 0; i < size; i++ {
+		for j := 0; j < size; j++ {
 			geo := ebiten.GeoM{}
-			geo.Translate(float64(i*tileSize), float64(j*tileSize))
+			geo.Translate(float64(i*g.tileSize), float64(j*g.tileSize))
 			g.img.DrawImage(sq, &ebiten.DrawImageOptions{
 				GeoM: geo,
 			})
@@ -68,22 +66,20 @@ var _ Scene = (*GridScene)(nil)
 func (s *GridScene) Draw(canvas *ebiten.Image) {
 	s.Grid.Draw(canvas)
 
-	curX, curY := ebiten.CursorPosition()
-	fCur := FPoint{float64(curX), float64(curY)}
-	fCur.X -= 91
-	iso := OrthoToIso(fCur)
-	isoPt := iso.ImagePoint()
+	// curX, curY := ebiten.CursorPosition()
+	// fCur := Point{float64(curX), float64(curY)}
+	// fCur.X -= 91
+	// iso := OrthoToIso(fCur)
+	// isoPt := iso.ImagePoint()
 
-	// canvas.Set(isoPt.X, isoPt.Y, color.RGBA{255, 0, 0, 255})
-
-	ebitenutil.DebugPrint(canvas,
-		fmt.Sprintf("screen: %d, %d\nworld: %d, %d", curX, curY, isoPt.X, isoPt.Y),
-	)
+	// ebitenutil.DebugPrint(canvas,
+	// 	fmt.Sprintf("screen: %d, %d\nworld: %d, %d", curX, curY, isoPt.X, isoPt.Y),
+	// )
 }
 
 func (s *GridScene) Update(deltaTime float64) {
 }
 
 func (s *GridScene) Init(game *Game) {
-	s.Grid = NewGrid(8, 8)
+	s.Grid = NewGrid(2)
 }

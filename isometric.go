@@ -40,8 +40,8 @@ func ImageToIsometric(src *ebiten.Image) *ebiten.Image {
 	return out
 }
 
-func OrthoToIso(p1 FPoint) (p2 FPoint) {
+func OrthoToIso(p1 Point) (p2 Point) {
 	m := IsoMatrix()
 	x, y := m.Apply(p1.X, p1.Y)
-	return FPoint{x, y}
+	return Point{x, y}
 }
