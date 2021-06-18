@@ -4,6 +4,7 @@ import (
 	"github.com/hajimehoshi/ebiten/v2"
 	"github.com/hajimehoshi/ebiten/v2/ebitenutil"
 
+	"image/color"
 	_ "image/png"
 )
 
@@ -35,7 +36,14 @@ func (g *Grid) DisplayHeight() int {
 }
 
 func (g *Grid) Draw(canvas *ebiten.Image) {
-	canvas.DrawImage(g.isometric, nil)
+	canvas.DrawImage(g.img, nil)
+
+	geo := ebiten.GeoM{}
+	geo.Translate(float64(g.DisplayWidth()), 0)
+
+	canvas.DrawImage(g.isometric, &ebiten.DrawImageOptions{
+		GeoM: geo,
+	})
 }
 
 func NewGrid(size int) *Grid {
@@ -66,20 +74,18 @@ var _ Scene = (*GridScene)(nil)
 func (s *GridScene) Draw(canvas *ebiten.Image) {
 	s.Grid.Draw(canvas)
 
-	// curX, curY := ebiten.CursorPosition()
-	// fCur := Point{float64(curX), float64(curY)}
-	// fCur.X -= 91
-	// iso := OrthoToIso(fCur)
-	// isoPt := iso.ImagePoint()
+	curX, curY := ebiten.CursorPosition()
+	fCur := Point{X: float64(curX), Y: float64(curY)}
+	isoCur := OrthoToIso(fCur)
+	isoCur.X += float64(s.Grid.img.Bounds().Dx())
+	isoCur.X += float64(s.Grid.isometric.Bounds().Dx()) / 2
 
-	// ebitenutil.DebugPrint(canvas,
-	// 	fmt.Sprintf("screen: %d, %d\nworld: %d, %d", curX, curY, isoPt.X, isoPt.Y),
-	// )
+	canvas.Set(isoCur.ImagePoint().X, isoCur.ImagePoint().Y, color.RGBA{255, 0, 0, 255})
 }
 
 func (s *GridScene) Update(deltaTime float64) {
 }
 
 func (s *GridScene) Init(game *Game) {
-	s.Grid = NewGrid(2)
+	s.Grid = NewGrid(3)
 }

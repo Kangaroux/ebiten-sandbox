@@ -1,6 +1,7 @@
 package game
 
 import (
+	"image/color"
 	"time"
 
 	"github.com/hajimehoshi/ebiten/v2"
@@ -48,9 +49,11 @@ func (g *Game) Update() error {
 }
 
 func (g *Game) Draw(canvas *ebiten.Image) {
+	canvas.Fill(color.White)
 	g.activeScene.Draw(canvas)
 }
 
 func (g *Game) Layout(w, h int) (int, int) {
-	return w / 4, h / 4
+	scale := 6
+	return w / scale, h / scale
 }
